@@ -1,0 +1,12 @@
+{
+  "name": "vogue-expo",
+  "version": "1.0.0",
+  "description": "Vogue Expo - Custom Exhibition Stand Design & Build",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
