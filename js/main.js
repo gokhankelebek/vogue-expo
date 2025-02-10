@@ -66,6 +66,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Handle header scroll effect
+  const header = document.getElementById('header');
+  let lastScroll = 0;
+
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
+    
+    if (currentScroll > 100) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+    
+    lastScroll = currentScroll;
+  });
+
   // Initialize Portfolio Gallery
   const workGallery = document.getElementById("work-gallery");
   if (workGallery) {
@@ -115,6 +131,49 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Newsletter subscription
+  async function handleNewsletterSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const email = form.email.value;
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
+
+    try {
+      submitButton.textContent = 'Subscribing...';
+      submitButton.disabled = true;
+
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Subscription failed');
+      }
+
+      // Show success message
+      form.innerHTML = `
+        <div class="newsletter__success">
+          <i class="fas fa-check-circle"></i>
+          <p>Thank you for subscribing! Check your email for confirmation.</p>
+        </div>
+      `;
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      alert(error.message || 'Failed to subscribe. Please try again later.');
+      
+      // Reset button
+      submitButton.textContent = originalButtonText;
+      submitButton.disabled = false;
+    }
+  }
+
   // Initialize testimonials
   console.log("Starting testimonials initialization...");
   
@@ -144,18 +203,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const prevButton = document.getElementById('prev-testimonial');
   const nextButton = document.getElementById('next-testimonial');
   
-  console.log("Found DOM elements:", {
-    track: track ? "Found" : "Not found",
-    dotsContainer: dotsContainer ? "Found" : "Not found",
-    prevButton: prevButton ? "Found" : "Not found",
-    nextButton: nextButton ? "Found" : "Not found"
-  });
-
   if (!track || !dotsContainer || !prevButton || !nextButton) {
     console.error('Testimonials elements not found. Aborting initialization.');
     return;
   }
 
+  // Initialize testimonials
   let currentIndex = 0;
 
   // Create testimonial cards
@@ -183,7 +236,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const dot = document.createElement('button');
     dot.className = `testimonial__dot ${index === 0 ? 'active' : ''}`;
     dot.setAttribute('aria-label', `Go to testimonial ${index + 1}`);
-    dot.addEventListener('click', () => goToSlide(index));
+    dot.addEventListener('click', () => {
+      currentIndex = index;
+      updateSlides();
+    });
     dotsContainer.appendChild(dot);
     console.log(`Added dot ${index + 1} to dots container`);
   });
@@ -194,7 +250,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const cards = track.querySelectorAll('.testimonial__card');
     const dots = dotsContainer.querySelectorAll('.testimonial__dot');
     
-    // Update active states
     cards.forEach((card, index) => {
       card.classList.toggle('active', index === currentIndex);
       card.style.transform = `translateX(${(index - currentIndex) * 100}%)`;
@@ -207,11 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Navigation functions
-  const goToSlide = (index) => {
-    currentIndex = index;
-    updateSlides();
-  };
-
   const nextSlide = () => {
     currentIndex = (currentIndex + 1) % testimonialData.length;
     updateSlides();
@@ -264,12 +314,147 @@ document.addEventListener("DOMContentLoaded", () => {
   updateSlides();
   console.log('Testimonials initialization complete');
 
+  // Initialize newsletter forms
+  const newsletterForms = document.querySelectorAll('.newsletter__form');
+  newsletterForms.forEach(form => {
+    form.addEventListener('submit', handleNewsletterSubmit);
+  });
+
+  // Initialize Supabase client
+  const supabaseUrl = 'https://owxsjpzzsqgqgrrajsiu.supabase.co';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93eHNqcHp6c3FncWdycmFqc2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDc1ODY3OTUsImV4cCI6MjAyMzE2Mjc5NX0.8Wy4iLKPH8oYDwI5E_KvXhyaGnxBWYSI_GAUOqMnODk';
+  const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
   // Contact Form Handling
   const contactForm = document.getElementById("contact-form");
   if (contactForm) {
     contactForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      // Form submission logic here
+      
+      // Get form data
+      const formData = new FormData(contactForm);
+      const data = Object.fromEntries(formData.entries());
+      
+      try {
+        // Show loading state
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.textContent = 'Sending...';
+        submitButton.disabled = true;
+
+        // Send to Supabase
+        const { error } = await supabase
+          .from('contact_submissions')
+          .insert([
+            {
+              name: data.name,
+              email: data.email,
+              company: data.company,
+              phone: data.phone || null,
+              interest: data.interest,
+              message: data.message
+            }
+          ]);
+
+        if (error) throw error;
+
+        // Show success message
+        contactForm.reset();
+        alert('Thank you for your message! We will get back to you shortly.');
+
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Sorry, there was an error sending your message. Please try again or contact us directly.');
+      } finally {
+        // Reset button state
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+      }
     });
+
+    // Add form validation
+    const inputs = contactForm.querySelectorAll('input[required], select[required], textarea[required]');
+    inputs.forEach(input => {
+      input.addEventListener('invalid', (e) => {
+        e.preventDefault();
+        input.classList.add('error');
+      });
+
+      input.addEventListener('input', () => {
+        if (input.validity.valid) {
+          input.classList.remove('error');
+        }
+      });
+    });
+  }
+
+  // Blog Filters
+  const initBlogFilters = () => {
+    const filterButtons = document.querySelectorAll('.blog-filter');
+    const blogCards = document.querySelectorAll('.blog-card');
+    const searchInput = document.querySelector('.blog-search input');
+
+    if (!filterButtons.length || !blogCards.length) return;
+
+    // Filter by category
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Update active state
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        const category = button.textContent.trim();
+        
+        blogCards.forEach(card => {
+          const cardCategory = card.querySelector('.blog-card__category').textContent.trim();
+          
+          if (category === 'All' || category === cardCategory) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        // Also apply current search filter
+        if (searchInput.value) {
+          filterBySearch(searchInput.value);
+        }
+      });
+    });
+
+    // Search functionality
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        filterBySearch(e.target.value);
+      }, 300);
+    });
+
+    function filterBySearch(searchTerm) {
+      searchTerm = searchTerm.toLowerCase();
+      
+      blogCards.forEach(card => {
+        if (card.style.display === 'none') return; // Skip if hidden by category filter
+
+        const title = card.querySelector('.blog-card__title').textContent.toLowerCase();
+        const excerpt = card.querySelector('.blog-card__excerpt').textContent.toLowerCase();
+        const category = card.querySelector('.blog-card__category').textContent.toLowerCase();
+        
+        if (title.includes(searchTerm) || 
+            excerpt.includes(searchTerm) || 
+            category.includes(searchTerm)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  };
+
+  // Initialize blog filters if on blog page
+  if (document.querySelector('.blog-filters')) {
+    initBlogFilters();
   }
 });

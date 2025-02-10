@@ -1,0 +1,10 @@
+{
+  "name": "vogue-expo-contact-api",
+  "version": "1.0.0",
+  "description": "Contact form API for Vogue Expo",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.0.0",
+    "joi": "^17.11.0"
+  }
+}
