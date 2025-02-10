@@ -137,17 +137,44 @@
     </section>
 
     <!-- Testimonials Section -->
-    <section class="testimonials section" id="testimonials">
-      <div class="testimonials__container container">
+    <section class="testimonials" id="testimonials">
+      <div class="container">
         <h2 class="section__title">What Our Clients Say</h2>
-        <p class="section__subtitle">Success stories from industry leaders</p>
-
-        <div class="testimonials__slider" id="testimonials-slider">
-          <!-- Testimonials will be populated via JavaScript -->
+        <p class="section__subtitle">Real stories from real clients who trusted us with their vision</p>
+        
+        <div class="testimonials__container">
+          <div class="testimonials__track" id="testimonials-track">
+            <!-- Testimonials will be inserted here by JavaScript -->
+          </div>
+          
+          <div class="testimonials__controls">
+            <button class="testimonial__arrow testimonial__arrow--prev" id="prev-testimonial" aria-label="Previous testimonial">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            
+            <div class="testimonials__dots" id="testimonial-dots">
+              <!-- Dots will be inserted here by JavaScript -->
+            </div>
+            
+            <button class="testimonial__arrow testimonial__arrow--next" id="next-testimonial" aria-label="Next testimonial">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
         </div>
-
-        <div class="clients__logos">
-          <!-- Client logos will be populated via JavaScript -->
+        
+        <div class="testimonials__stats">
+          <div class="stat__item">
+            <span class="stat__number">500+</span>
+            <span class="stat__label">Happy Clients</span>
+          </div>
+          <div class="stat__item">
+            <span class="stat__number">98%</span>
+            <span class="stat__label">Satisfaction Rate</span>
+          </div>
+          <div class="stat__item">
+            <span class="stat__number">15+</span>
+            <span class="stat__label">Years Experience</span>
+          </div>
         </div>
       </div>
     </section>
@@ -299,7 +326,7 @@
               class="footer__logo"
             />
             <p>
-              Creating unforgettable exhibition experiences that drive results.
+              Creating unforgettable exhibition experiences that drive results. We specialize in innovative, sustainable, and custom-designed exhibition stands.
             </p>
             <div class="footer__contact">
               <div class="contact__item">
@@ -309,6 +336,10 @@
               <div class="contact__item">
                 <i class="fas fa-phone"></i>
                 <p><a href="tel:+17023431078">(702) 343-1078</a></p>
+              </div>
+              <div class="contact__item">
+                <i class="fas fa-envelope"></i>
+                <p><a href="mailto:info@vogueexpo.com">info@vogueexpo.com</a></p>
               </div>
             </div>
           </div>
@@ -325,20 +356,20 @@
           <div class="footer__social">
             <h4>Connect With Us</h4>
             <div class="social__links">
-              <a href="#" class="social__link"
-                ><i class="fab fa-linkedin"></i
-              ></a>
-              <a href="#" class="social__link"
-                ><i class="fab fa-instagram"></i
-              ></a>
-              <a href="#" class="social__link"
-                ><i class="fab fa-facebook"></i
-              ></a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social__link" aria-label="LinkedIn">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social__link" aria-label="Instagram">
+                <i class="fab fa-instagram"></i>
+              </a>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social__link" aria-label="Facebook">
+                <i class="fab fa-facebook-f"></i>
+              </a>
             </div>
           </div>
         </div>
         <div class="footer__bottom">
-          <p>&copy; 2024 Vogue Expo. All rights reserved.</p>
+          <p>&copy; 2024 Vogue Expo. All rights reserved. | <a href="#privacy">Privacy Policy</a> | <a href="#terms">Terms of Service</a></p>
         </div>
       </div>
     </footer>
