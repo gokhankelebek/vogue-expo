@@ -1,15 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
-const { createClient } = require('@supabase/supabase-js');
-
-// Initialize Supabase client - You'll need to replace these with your actual credentials
-// We're using environment variables as a best practice for security
-const supabaseUrl = process.env.SUPABASE_URL || 'https://avsgsxwiovtdshzdgpbr.supabase.co';
-const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2c2dzeHdpb3Z0ZHNoemRncGJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkwNjIzMTUsImV4cCI6MjA1NDYzODMxNX0.PY2c_d56AJIDyuQK3csJ8eC89WtaP0yo7uADpCvSU14';
-
-// Create the Supabase client with the provided credentials
-let supabase = createClient(supabaseUrl, supabaseKey);
 
 // Modified transporter to use a more reliable approach for development
 let transporter;
@@ -49,38 +40,6 @@ router.post('/contact', async (req, res) => {
   }
 
   try {
-    // Store contact form submission in Supabase if client is initialized
-    if (supabase) {
-      try {
-        const { data, error } = await supabase
-          .from('contact_submissions')
-          .insert([
-            { 
-              name, 
-              email, 
-              company, 
-              phone: phone || null, 
-              interest, 
-              message,
-              status: 'new',
-              created_at: new Date().toISOString()
-            }
-          ]);
-        
-        if (error) {
-          console.error('Supabase error:', error);
-          // Continue with email sending even if database storage fails
-        } else {
-          console.log('Contact form submission stored in Supabase:', data);
-        }
-      } catch (supabaseError) {
-        console.error('Supabase operation failed:', supabaseError);
-        // Continue with email sending even if Supabase fails
-      }
-    } else {
-      console.log('Supabase client not initialized. Skipping database storage.');
-    }
-
     // Email content
     const mailOptions = {
       from: email,

@@ -139,38 +139,19 @@ To add Google Analytics:
 
 ## Contact Form Integration
 
-The contact form is set up to handle submissions in two ways:
+The contact form is set up to handle submissions via email notifications. Form submissions are sent via email to the specified recipient.
 
-1. **Email Notifications**: Form submissions are sent via email to the specified recipient
-2. **Supabase Database Storage**: Form submissions are also stored in a Supabase database for better tracking and management
+### Setting Up Email Notifications
 
-### Setting Up Supabase Integration
-
-1. Create a free Supabase account at [supabase.com](https://supabase.com)
-2. Create a new project and get your project URL and anon key
-3. Create a table called `contact_submissions` with the following columns:
-   - `id` (int8, primary key)
-   - `name` (text)
-   - `email` (text)
-   - `company` (text)
-   - `phone` (text, nullable)
-   - `interest` (text)
-   - `message` (text)
-   - `status` (text, default: 'new')
-   - `created_at` (timestamptz)
-4. Set up environment variables:
+1. Set up environment variables:
 
    ```bash
    # For production email sending
    export EMAIL_USER=your-email@gmail.com
    export EMAIL_PASS=your-app-specific-password
-   
-   # For Supabase integration
-   export SUPABASE_URL=https://your-project-url.supabase.co
-   export SUPABASE_KEY=your-supabase-anon-key
    ```
 
-5. Alternatively, update the values directly in `/api/contact.js` (not recommended for production)
+2. Alternatively, update the values directly in `/api/contact.js` (not recommended for production)
 
 ### Contact Form Features
 
@@ -180,7 +161,6 @@ The contact form is set up to handle submissions in two ways:
 - Success confirmation with thank you message
 - Responsive design for all devices
 - Accessibility compliance (WCAG)
-- Data storage in Supabase for lead management
 - Email notifications for immediate response
 
 ## Server Setup
