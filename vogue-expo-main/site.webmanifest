@@ -1,0 +1,26 @@
+{
+  "name": "Vogue Expo - Custom Exhibition Stand Design & Build",
+  "short_name": "Vogue Expo",
+  "description": "Transform your trade show presence with Vogue Expo's innovative, sustainable, and custom-designed exhibition stands in Las Vegas.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0066FF",
+  "icons": [
+    {
+      "src": "assets/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
