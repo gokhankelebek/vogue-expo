@@ -1,6 +1,24 @@
 const express = require('express');
 const path = require('path');
+const chokidar = require('chokidar');
 const app = express();
+
+// Watch /assets directory for new image files
+const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+const assetsDir = path.join(__dirname, 'assets');
+
+const watcher = chokidar.watch(assetsDir, {
+  ignored: /(^|[\/\\])\../, // ignore dotfiles
+  persistent: true,
+});
+
+watcher.on('add', filePath => {
+  const ext = path.extname(filePath).toLowerCase();
+  if (imageExtensions.includes(ext)) {
+    console.log(`New image added: ${filePath}`);
+    // You can add further actions here, e.g., notify frontend, process image, etc.
+  }
+});
 
 // Body parser for JSON requests
 app.use(express.json());
@@ -11,6 +29,7 @@ app.use(express.static(path.join(__dirname)));
 
 // API routes
 app.use('/api', require('./api/newsletter'));
+app.use('/api', require('./api/contact'));
 
 // Serve blog pages
 app.get('/blog', (req, res) => {

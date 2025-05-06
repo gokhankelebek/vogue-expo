@@ -1,34 +1,34 @@
 // Portfolio Gallery Data
 const galleryData = [
   {
-    image: "assets/DALL·E 2025-02-09 09.35.16 - An elegant and high-end luxury fashion expo stand set in a premium exhibition space. The stand features a minimalist boutique-style layout with carefu.webp",
-    title: "Luxury Fashion Showcase",
-    description: "Minimalist boutique-style layout with premium finishes",
+    image: "assets/PHOTO-2025-03-01-23-42-53 2.jpg",
+    title: "Modern Exhibition Design",
+    description: "Contemporary booth with striking visual elements",
   },
   {
-    image: "assets/DALL·E 2025-02-09 09.35.14 - A cutting-edge smart home and IoT technology expo stand designed to showcase the latest innovations in home automation. The stand features interactive.webp",
-    title: "Smart Home Innovation Hub",
-    description: "Interactive IoT technology showcase with live demos",
+    image: "assets/PHOTO-2025-03-01-23-42-53 3.jpg",
+    title: "Interactive Display Solution",
+    description: "Engaging booth design with multimedia integration",
   },
   {
-    image: "assets/DALL·E 2025-02-09 09.35.11 - A futuristic and immersive gaming and e-sports expo stand featuring a sleek, high-tech design. The stand includes multiple gaming stations with high-p.webp",
-    title: "E-Sports Arena",
-    description: "Immersive gaming experience with high-tech stations",
+    image: "assets/PHOTO-2025-03-01-23-42-53 4.jpg",
+    title: "Premium Brand Experience",
+    description: "Luxury-focused exhibition space with elegant details",
   },
   {
-    image: "assets/DALL·E 2025-02-09 09.35.07 - A highly realistic and professional electric vehicle and charging solutions expo stand set in a modern exhibition hall. The stand features a futuristi.webp",
-    title: "EV Innovation Center",
-    description: "Futuristic showcase of electric vehicle solutions",
+    image: "assets/PHOTO-2025-03-01-23-42-53 5.jpg",
+    title: "Dynamic Trade Show Booth",
+    description: "Bold and innovative stand design",
   },
   {
-    image: "assets/DALL·E 2025-02-09 09.35.01 - A highly realistic and professional university and academic institution expo stand set in a modern exhibition hall. The stand features a clean and inv.webp",
-    title: "Academic Excellence",
-    description: "Modern educational institution showcase",
+    image: "assets/PHOTO-2025-03-01-23-42-53 6.jpg",
+    title: "Corporate Exhibition Space",
+    description: "Professional and sophisticated booth layout",
   },
   {
-    image: "assets/DALL·E 2025-02-09 09.34.49 - A visually appealing and modern food franchise expo stand with minimal text. The design focuses on vibrant food imagery, with high-quality photos of d.webp",
-    title: "Culinary Showcase",
-    description: "Vibrant food franchise presentation",
+    image: "assets/PHOTO-2025-03-01-23-42-54.jpg",
+    title: "Custom Brand Showcase",
+    description: "Tailored exhibition design with brand focus",
   }
 ];
 
@@ -100,6 +100,11 @@ document.addEventListener("DOMContentLoaded", () => {
       galleryItem.addEventListener("click", () => {
         const lightbox = document.createElement("div");
         lightbox.className = "lightbox";
+        
+        const img = new Image();
+        img.src = item.image;
+        img.alt = item.title;
+        
         lightbox.innerHTML = `
           <div class="lightbox__content">
             <button class="lightbox__close">&times;</button>
@@ -111,20 +116,17 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `;
         
+        document.body.style.overflow = 'hidden'; // Prevent scrolling when lightbox is open
+        
         // Close lightbox when clicking outside or on close button
         lightbox.addEventListener("click", (e) => {
           if (e.target === lightbox || e.target.classList.contains('lightbox__close')) {
-            lightbox.classList.add('fade-out');
-            setTimeout(() => {
-              document.body.removeChild(lightbox);
-            }, 300);
+            document.body.style.overflow = ''; // Restore scrolling
+            document.body.removeChild(lightbox);
           }
         });
         
         document.body.appendChild(lightbox);
-        // Trigger reflow to ensure animation plays
-        lightbox.offsetHeight;
-        lightbox.classList.add('fade-in');
       });
       
       workGallery.appendChild(galleryItem);
@@ -326,66 +328,145 @@ document.addEventListener("DOMContentLoaded", () => {
   const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
   // Contact Form Handling
-  const contactForm = document.getElementById("contact-form");
+  const contactForm = document.getElementById('contact-form');
   if (contactForm) {
-    contactForm.addEventListener("submit", async (e) => {
+    // Add input validation feedback
+    const formInputs = contactForm.querySelectorAll('input, textarea, select');
+    formInputs.forEach(input => {
+      input.addEventListener('blur', () => {
+        validateInput(input);
+      });
+      
+      input.addEventListener('input', () => {
+        // Clear error state when user starts typing
+        input.classList.remove('error');
+        const errorElement = input.parentElement.querySelector('.input-error');
+        if (errorElement) {
+          errorElement.remove();
+        }
+      });
+    });
+    
+    function validateInput(input) {
+      // Skip validation for optional fields that are empty
+      if (input.id === 'phone' && input.value.trim() === '') {
+        return true;
+      }
+      
+      let isValid = input.checkValidity();
+      
+      // Custom validation
+      if (input.id === 'email' && input.value.trim() !== '') {
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        isValid = emailPattern.test(input.value.trim());
+        if (!isValid) {
+          showError(input, 'Please enter a valid email address');
+        }
+      }
+      
+      if (input.required && input.value.trim() === '') {
+        isValid = false;
+        showError(input, 'This field is required');
+      }
+      
+      if (!isValid) {
+        input.classList.add('error');
+      } else {
+        input.classList.remove('error');
+        const errorElement = input.parentElement.querySelector('.input-error');
+        if (errorElement) {
+          errorElement.remove();
+        }
+      }
+      
+      return isValid;
+    }
+    
+    function showError(input, message) {
+      // Remove any existing error message
+      const existingError = input.parentElement.querySelector('.input-error');
+      if (existingError) {
+        existingError.remove();
+      }
+      
+      // Add error message
+      const errorElement = document.createElement('div');
+      errorElement.className = 'input-error';
+      errorElement.textContent = message;
+      input.parentElement.appendChild(errorElement);
+    }
+    
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      // Get form data
-      const formData = new FormData(contactForm);
-      const data = Object.fromEntries(formData.entries());
+      const formError = document.getElementById('form-error');
+      formError.textContent = '';
+      formError.style.display = 'none';
       
+      // Validate all inputs
+      let isFormValid = true;
+      formInputs.forEach(input => {
+        if (!validateInput(input)) {
+          isFormValid = false;
+        }
+      });
+      
+      if (!isFormValid) {
+        formError.textContent = 'Please correct the errors in the form.';
+        formError.style.display = 'block';
+        return;
+      }
+      
+      const submitButton = contactForm.querySelector('button[type="submit"]');
+      const originalButtonText = submitButton.textContent;
+      
+      // Get form data
+      const formData = {
+        name: contactForm.querySelector('#name').value.trim(),
+        email: contactForm.querySelector('#email').value.trim(),
+        company: contactForm.querySelector('#company').value.trim(),
+        phone: contactForm.querySelector('#phone').value.trim(),
+        interest: contactForm.querySelector('#interest').value,
+        message: contactForm.querySelector('#message').value.trim()
+      };
+
       try {
-        // Show loading state
-        const submitButton = contactForm.querySelector('button[type="submit"]');
-        const originalText = submitButton.textContent;
         submitButton.textContent = 'Sending...';
         submitButton.disabled = true;
 
-        // Send to Supabase
-        const { error } = await supabase
-          .from('contact_submissions')
-          .insert([
-            {
-              name: data.name,
-              email: data.email,
-              company: data.company,
-              phone: data.phone || null,
-              interest: data.interest,
-              message: data.message
-            }
-          ]);
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
 
-        if (error) throw error;
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to send message');
+        }
 
         // Show success message
-        contactForm.reset();
-        alert('Thank you for your message! We will get back to you shortly.');
+        const formWrapper = contactForm.parentElement;
+        formWrapper.innerHTML = `
+          <div class="form__success">
+            <i class="fas fa-check-circle"></i>
+            <h3>Thank You!</h3>
+            <p>Your message has been sent successfully. We'll get back to you within 24 hours.</p>
+          </div>
+        `;
 
       } catch (error) {
-        console.error('Error:', error);
-        alert('Sorry, there was an error sending your message. Please try again or contact us directly.');
-      } finally {
-        // Reset button state
-        const submitButton = contactForm.querySelector('button[type="submit"]');
-        submitButton.textContent = originalText;
+        console.error('Form submission error:', error);
+        formError.textContent = error.message || 'Failed to send message. Please try again later.';
+        formError.style.display = 'block';
+        
+        // Reset button
+        submitButton.textContent = originalButtonText;
         submitButton.disabled = false;
       }
-    });
-
-    // Add form validation
-    const inputs = contactForm.querySelectorAll('input[required], select[required], textarea[required]');
-    inputs.forEach(input => {
-      input.addEventListener('invalid', (e) => {
-        e.preventDefault();
-        input.classList.add('error');
-      });
-
-      input.addEventListener('input', () => {
-        if (input.validity.valid) {
-          input.classList.remove('error');
-        }
-      });
     });
   }
 
