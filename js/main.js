@@ -478,6 +478,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!filterButtons.length || !blogCards.length) return;
 
+    // Helper: fade in effect
+    function fadeIn(el) {
+      el.style.opacity = 0;
+      el.style.display = 'block';
+      setTimeout(() => {
+        el.style.transition = 'opacity 0.3s';
+        el.style.opacity = 1;
+      }, 10);
+    }
+
     // Filter by category
     filterButtons.forEach(button => {
       button.addEventListener('click', () => {
@@ -485,15 +495,16 @@ document.addEventListener("DOMContentLoaded", () => {
         filterButtons.forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
 
-        const category = button.textContent.trim();
-        
+        const category = button.textContent.trim().toLowerCase();
+
         blogCards.forEach(card => {
-          const cardCategory = card.querySelector('.blog-card__category').textContent.trim();
-          
-          if (category === 'All' || category === cardCategory) {
-            card.style.display = 'block';
+          // Support for multiple categories in the future
+          const cardCategory = card.querySelector('.blog-card__category').textContent.trim().toLowerCase();
+          if (category === 'all' || cardCategory === category) {
+            fadeIn(card);
           } else {
             card.style.display = 'none';
+            card.style.opacity = 1;
           }
         });
 
@@ -515,20 +526,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function filterBySearch(searchTerm) {
       searchTerm = searchTerm.toLowerCase();
-      
       blogCards.forEach(card => {
         if (card.style.display === 'none') return; // Skip if hidden by category filter
-
         const title = card.querySelector('.blog-card__title').textContent.toLowerCase();
         const excerpt = card.querySelector('.blog-card__excerpt').textContent.toLowerCase();
         const category = card.querySelector('.blog-card__category').textContent.toLowerCase();
-        
-        if (title.includes(searchTerm) || 
-            excerpt.includes(searchTerm) || 
-            category.includes(searchTerm)) {
-          card.style.display = 'block';
+        if (title.includes(searchTerm) || excerpt.includes(searchTerm) || category.includes(searchTerm)) {
+          fadeIn(card);
         } else {
           card.style.display = 'none';
+          card.style.opacity = 1;
         }
       });
     }
